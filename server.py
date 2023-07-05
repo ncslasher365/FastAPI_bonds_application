@@ -16,22 +16,11 @@ fake_trades_db = [
 ]
 
 
-@app.get("/users/{user_id}")
+@app.get("/users/{user_id}", tags=["users"])
 async def parse_user_information(user_id: int):
     return [user for user in fake_users_db if user.get("id") == user_id]
 
-
-@app.get("/trades")
-async def get_trades(limit: int = 1, offset: int = 0):
-    return fake_trades_db[offset : offset + limit]
-
-
-@app.get("/trades/{trade_id}")
-async def get_trade_by_id(trade_id: int):
-    return [trade for trade in fake_trades_db if trade.get("id") == trade_id]
-
-
-@app.post("/users/{user_id}")
+@app.post("/users/{user_id}", tags=["users"])
 def update_user_name(user_id: int, new_name: str):
     try:
         current_user = list(filter(lambda user: user.get("id") == user_id, fake_users_db))[0]
@@ -39,4 +28,14 @@ def update_user_name(user_id: int, new_name: str):
         return {"status": 404, "data": "User data not found"}
     if current_user:
         current_user["name"] = new_name
-    return {"status": 200, "data": current_user}
+    return {"status": 201, "data": current_user}
+
+
+@app.get("/trades", tags=["trades"])
+async def get_trades(limit: int = 1, offset: int = 0):
+    return fake_trades_db[offset : offset + limit]
+
+
+@app.get("/trades/{trade_id}", tags=["trades"])
+async def get_trade_by_id(trade_id: int):
+    return [trade for trade in fake_trades_db if trade.get("id") == trade_id]
