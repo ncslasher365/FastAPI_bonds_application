@@ -33,6 +33,10 @@ async def get_trade_by_id(trade_id: int):
 
 @app.post("/users/{user_id}")
 def update_user_name(user_id: int, new_name: str):
-    current_user = list(filter(lambda user: user.get("id") == user_id, fake_users_db))[0]
-    current_user["name"] = new_name
+    try:
+        current_user = list(filter(lambda user: user.get("id") == user_id, fake_users_db))[0]
+    except IndexError:
+        return {"status": 404, "data": "User data not found"}
+    if current_user:
+        current_user["name"] = new_name
     return {"status": 200, "data": current_user}
