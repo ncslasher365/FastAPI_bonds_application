@@ -20,6 +20,7 @@ fake_trades_db = [
 async def parse_user_information(user_id: int):
     return [user for user in fake_users_db if user.get("id") == user_id]
 
+
 @app.post("/users/{user_id}", tags=["users"])
 def update_user_name(user_id: int, new_name: str):
     try:
