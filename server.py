@@ -23,7 +23,7 @@ async def parse_user_information(user_id: int):
 
 @app.get("/trades")
 async def get_trades(limit: int = 1, offset: int = 0):
-    return fake_trades_db[offset:][:limit]
+    return fake_trades_db[offset : offset + limit]
 
 
 @app.get("/trades/{trade_id}")
