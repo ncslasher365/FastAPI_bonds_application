@@ -62,12 +62,12 @@ async def get_trades(limit: int = 1, offset: int = 0):
     return fake_trades_db[offset: offset + limit]
 
 
-@app.get("/trades/{trade_id}", tags=["trades"])
-async def get_trade_by_id(trade_id: int):
-    return [trade for trade in fake_trades_db if trade.get("id") == trade_id]
-
-
 @app.post("/trades", tags=["trades"])
 async def add_trades(trades: List[Trade]):
     fake_trades_db.extend(trades)
     return {"status": 200, "data": fake_trades_db}
+
+
+@app.get("/trades/{trade_id}", tags=["trades"])
+async def get_trade_by_id(trade_id: int):
+    return [trade for trade in fake_trades_db if trade.get("id") == trade_id]
