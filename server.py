@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from typing import List
-from models import Trade, User, UserResponse
+from models import Trade, UserResponse
 
 app = FastAPI(
     title="Trading application"
@@ -10,6 +10,9 @@ fake_users_db = [
     {"id": 1, "role": "admin", "name": "Bob"},
     {"id": 2, "role": "investor", "name": "John"},
     {"id": 3, "role": "trader", "name": "Matt"},
+    {"id": 4, "role": "investor", "name": "Homer", "degree": [
+        {"id": 1, "created_at": "2020-01-01T00:00:00", "type_degree": "expert"}
+    ]},
 ]
 
 fake_trades_db = [
