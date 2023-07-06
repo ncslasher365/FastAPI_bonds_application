@@ -18,8 +18,14 @@ fake_trades_db = [
 
 @app.get("/users/{user_id}", tags=["users"])
 async def parse_user_information(user_id: int):
-    return [user for user in fake_users_db if user.get("id") == user_id]
-
+    try:
+        user_data = [user for user in fake_users_db if user.get("id") == user_id]
+    except Exception as e:
+        raise e
+    if user_data:
+        return {"status": 200, "data": user_data}
+    else:
+        return {"status": 404, "data": "User not found in the database!"}
 
 @app.post("/users/{user_id}", tags=["users"])
 def update_user_name(user_id: int, new_name: str):
@@ -29,7 +35,7 @@ def update_user_name(user_id: int, new_name: str):
         return {"status": 404, "data": "User data not found"}
     if current_user:
         current_user["name"] = new_name
-    return {"status": 201, "data": current_user}
+    return {"status": 201, "data": current_user} # 201 - successfull post response
 
 
 @app.get("/trades", tags=["trades"])
