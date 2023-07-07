@@ -47,7 +47,7 @@ async def parse_user_information(user_id: int):
 
 
 @app.post("/users/{user_id}", tags=["users"])
-def update_user_name(user_id: int, new_name: str):
+async def update_user_name(user_id: int, new_name: str):
     try:
         current_user = list(filter(lambda user: user.get("id") == user_id, fake_users_db))[0]
     except IndexError:
