@@ -1,4 +1,5 @@
 from fastapi_users import schemas
+
 from typing import Optional
 
 

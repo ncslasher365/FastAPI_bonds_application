@@ -1,20 +1,11 @@
+from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
+from sqlalchemy import Integer, String, TIMESTAMP,\
+    ForeignKey, Column, JSON, Boolean
 from datetime import datetime
-from typing import AsyncGenerator
 
-from fastapi import Depends
-from sqlalchemy import String, Boolean, Integer, TIMESTAMP, ForeignKey, Column, JSON
-from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import mapped_column, Mapped, declarative_base
 
-from src.config import DB_USER, DB_PASSWORD, DB_PORT, DB_NAME, DB_HOST
-# from models.models import Role
-
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-
-class Base(DeclarativeBase):
-    pass
+Base = declarative_base()
 
 
 class Role(Base):
@@ -25,8 +16,22 @@ class Role(Base):
     permissions = Column(JSON)
 
 
-class User(SQLAlchemyBaseUserTable[int], Base):
+class UserDB(Base):
     __tablename__ = 'user'
+
+    id = Column(Integer(), primary_key=True)
+    email = Column(String(255), nullable=False, unique=True)
+    username = Column(String(255), nullable=False, unique=True)
+    hashed_password = Column(String(255), nullable=False)
+    registered_at = Column(TIMESTAMP(), default=datetime.utcnow)
+    role_id = Column(Integer(), ForeignKey('role.id'))
+    is_active = Column(Boolean(), default=True, nullable=False)
+    is_superuser = Column(Boolean(), default=False, nullable=False)
+    is_verified = Column(Boolean(), default=False, nullable=False)
+
+
+class User(SQLAlchemyBaseUserTable[int], Base):
+    __table_args__ = {'keep_existing': True}
 
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True
@@ -53,16 +58,3 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     is_verified: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
     )
-
-
-engine = create_async_engine(DATABASE_URL)
-async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
-
-
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session
-
-
-async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    yield SQLAlchemyUserDatabase(session, User)
